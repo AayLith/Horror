@@ -13,7 +13,7 @@ public class BoardEditor : MonoBehaviour
     public static Tile currentTile; // Tiles currently hoverred by the mouse
     public Room currentRoom;
     List<Tile> selectedTiles = new List<Tile> ();
-    private Dictionary<Point , Tile> tiles = new Dictionary<Point , Tile> ();
+    Dictionary<Point , Tile> tiles { get { return currentRoom.roomTiles; } }
 
     // Right, top, left and bottom tiles
     static Point[] square = new Point[ 4 ]

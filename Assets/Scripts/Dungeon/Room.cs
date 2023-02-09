@@ -9,4 +9,5 @@ public class Room : MonoBehaviour
     public Transform doodads;
     public Transform spawns;
     public Transform objects;
+    public Dictionary<Point , Tile> roomTiles = new Dictionary<Point , Tile> ();
 }
