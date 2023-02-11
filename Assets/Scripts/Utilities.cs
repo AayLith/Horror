@@ -16,24 +16,24 @@ public static class Utilities
         {
             if ( startTile.content == null && endTile.content == null )
                 return false;
-            if ( startTile.content != null && endTile.content == null && hit1.transform != startTile.content.LOSComponent.transform )
+            if ( startTile.content != null && endTile.content == null && hit1.transform != startTile.content.transform )
                 return false;
-            if ( startTile.content == null && endTile.content != null && hit1.transform != endTile.content.LOSComponent.transform )
+            if ( startTile.content == null && endTile.content != null && hit1.transform != endTile.content.transform )
                 return false;
             if ( startTile.content != null && endTile.content != null )
-                if ( hit1.transform != startTile.content.LOSComponent.transform && hit1.transform != endTile.content.LOSComponent.transform )
+                if ( hit1.transform != startTile.content.transform && hit1.transform != endTile.content.transform )
                     return false;
         }
         if ( Physics.Raycast ( end , start - end , out hit2 , Vector3.Distance ( start , end ) , layer_mask ) )
         {
             if ( startTile.content == null && endTile.content == null )
                 return false;
-            if ( startTile.content != null && endTile.content == null && hit2.transform != startTile.content.LOSComponent.transform )
+            if ( startTile.content != null && endTile.content == null && hit2.transform != startTile.content.transform )
                 return false;
-            if ( startTile.content == null && endTile.content != null && hit2.transform != endTile.content.LOSComponent.transform )
+            if ( startTile.content == null && endTile.content != null && hit2.transform != endTile.content.transform )
                 return false;
             if ( startTile.content != null && endTile.content != null )
-                if ( hit1.transform != startTile.content.LOSComponent.transform && hit2.transform != endTile.content.LOSComponent.transform )
+                if ( hit1.transform != startTile.content.transform && hit2.transform != endTile.content.transform )
                     return false;
             /*
             if ( ( startTile.content != null && hit2.transform != startTile.content.LOSComponent.transform ) ||

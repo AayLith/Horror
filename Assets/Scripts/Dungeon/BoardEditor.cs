@@ -12,7 +12,6 @@ public class BoardEditor : MonoBehaviour
     public static Point pointWorldPos { get { return new Point ( mouseWorldPos ); } }
     public static Tile currentTile; // Tiles currently hoverred by the mouse
     public Room currentRoom;
-    List<Tile> selectedTiles = new List<Tile> ();
     Dictionary<Point , Tile> tiles { get { return currentRoom.roomTiles; } }
 
     // Right, top, left and bottom tiles
@@ -48,10 +47,12 @@ public class BoardEditor : MonoBehaviour
     private Tile firstSelectedTile;
     private Tile secondSelectedTile;
 
-    public enum states { addTile, remTile, selectTile, link, switchTile }
-    [HideInInspector] public states currentState = states.addTile;
     [Space ( 50 )]
+    [Header ( "Editor" )]
     public bool editorEnabled = false;
+    public DungeonElement objectToAdd;
+    public enum states { addTile, remTile, selectTile, link, switchTile, addObject, remObject }
+    [HideInInspector] public states currentState = states.addTile;
 
     private void Reset ()
     {
@@ -102,6 +103,12 @@ public class BoardEditor : MonoBehaviour
                     break;
                 case states.switchTile:
                     switchTile ( pointWorldPos );
+                    break;
+                case states.addObject:
+                    addObject ( pointWorldPos );
+                    break;
+                case states.remObject:
+                    remObject ( pointWorldPos );
                     break;
             }
     }
@@ -214,6 +221,33 @@ public class BoardEditor : MonoBehaviour
     {
         selector.gameObject.SetActive ( true );
         selector.transform.position = t.transform.position;
+    }
+
+    // Ajoute l'objet choisit sur la tuile si elle existe et est libre
+    void addObject ( Point p )
+    {
+        if ( !tiles.ContainsKey ( p ) )
+            return;
+        if ( tiles[ pointWorldPos ].content != null )
+            return;
+
+        Tile t = tiles[ p ];
+        GameObject doodad = ( PrefabUtility.InstantiatePrefab ( objectToAdd ) as DungeonElement ).gameObject;
+        doodad.transform.parent = currentRoom.objects;
+        doodad.GetComponent<DungeonElement> ().tile = t;
+        t.setContent ( doodad.GetComponent<DungeonElement> () );
+        doodad.transform.position = t.transform.position;
+    }
+
+    // Supprime l'objet de la tuile si il existe
+    void remObject ( Point p )
+    {
+        if ( !tiles.ContainsKey ( p ) )
+            return;
+        if ( tiles[ pointWorldPos ].content == null )
+            return;
+
+        DestroyImmediate ( tiles[ pointWorldPos ].content.gameObject );
     }
 
     public void reset ()

@@ -5,7 +5,7 @@ using UnityEngine;
 public class DungeonElement : MonoBehaviour
 {
     public bool bockLOS = false;
-    public GameObject LOSComponent;
+    public Collider2D collider2d;
     public Tile tile;
 
     private void Awake ()
@@ -16,7 +16,7 @@ public class DungeonElement : MonoBehaviour
     {
         tile = Board.instance.getTile ( transform.position );
         tile.setContent ( this );
-        LOSComponent.SetActive ( bockLOS );
+        collider2d.enabled = bockLOS;
     }
 
     public virtual void takeDamage ( int amount )

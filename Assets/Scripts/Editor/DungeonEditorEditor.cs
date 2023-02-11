@@ -19,6 +19,10 @@ public class DungeonEditorEditor : Editor
             myScript.currentState = BoardEditor.states.selectTile;
         if ( GUILayout.Button ( "Switch Tile Mode" ) )
             myScript.currentState = BoardEditor.states.switchTile;
+        if ( GUILayout.Button ( "Add Object Mode" ) )
+            myScript.currentState = BoardEditor.states.addObject;
+        if ( GUILayout.Button ( "Remove Object Mode" ) )
+            myScript.currentState = BoardEditor.states.remObject;
 
         GUILayout.Space ( 20 );
         if ( GUILayout.Button ( "Make Link" ) )
