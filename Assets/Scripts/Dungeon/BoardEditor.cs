@@ -50,8 +50,9 @@ public class BoardEditor : MonoBehaviour
     [Space ( 50 )]
     [Header ( "Editor" )]
     public bool editorEnabled = false;
+    public TerrainType.terrainTypes currentTerrain;
     public DungeonElement objectToAdd;
-    public enum states { addTile, remTile, selectTile, link, switchTile, addObject, remObject }
+    public enum states { addTile, remTile, selectTile, link, switchTile, addObject, remObject, terrain }
     [HideInInspector] public states currentState = states.addTile;
 
     private void Reset ()
@@ -110,6 +111,9 @@ public class BoardEditor : MonoBehaviour
                 case states.remObject:
                     remObject ( pointWorldPos );
                     break;
+                case states.terrain:
+                    setTerrain ( pointWorldPos );
+                    break;
             }
     }
 
@@ -122,6 +126,7 @@ public class BoardEditor : MonoBehaviour
         GameObject tile = ( PrefabUtility.InstantiatePrefab ( tilePrefab ) as Tile ).gameObject;
         tile.transform.parent = currentRoom.tiles;
         tile.GetComponent<Tile> ().setPos ( pointWorldPos );
+        tile.GetComponent<Tile> ().setTerrain ( new TerrainType ( currentTerrain ) );
         tiles.Add ( tile.GetComponent<Tile> ().pos , tile.GetComponent<Tile> () );
         tile.name = "Tile " + pointWorldPos.x + " , " + pointWorldPos.y;
         setLinks ( tile.GetComponent<Tile> () );
@@ -248,6 +253,15 @@ public class BoardEditor : MonoBehaviour
             return;
 
         DestroyImmediate ( tiles[ pointWorldPos ].content.gameObject );
+    }
+
+    // Set le terrain d'une case
+    void setTerrain ( Point p )
+    {
+        if ( !tiles.ContainsKey ( p ) )
+            return;
+
+        tiles[ p ].setTerrain ( new TerrainType ( currentTerrain ) );
     }
 
     public void reset ()

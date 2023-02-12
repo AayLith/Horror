@@ -12,6 +12,7 @@ public class Board : MonoBehaviour
     public static Tile currentTile; // Tiles currently hoverred by the mouse
     public static Tile previousTile; // Tiles hoverred by the mouse during the previous frame
     public static Vector3 mouseWorldPos = Vector3.zero; // Mouse position on the board
+    public enum moveTypes { Walk, Swim, Fly, Levitate, Teleport }
 
     private Dictionary<Point , Tile> tiles = new Dictionary<Point , Tile> ();
 
@@ -132,13 +133,13 @@ public class Board : MonoBehaviour
     /// <param name="stopSearchIfOccupied">If true, the search is alted at Tiles with contents</param>
     /// <param name="addFirstTile">If true, the Start Tile is added</param>
     /// <returns></returns>
-    public List<Tile> getTilesForMove ( Tile start , int radius , bool dontAddIfOccupied , bool stopSearchIfOccupied , bool addFirstTile = true )
+    public List<Tile> getTilesForMove ( Tile start , int radius , bool dontAddIfOccupied , bool stopSearchIfOccupied , moveTypes moveType , bool addFirstTile = true )
     {
         if ( start == null ) return null;
         return SearchAreaLinks ( start , delegate ( SearchTile arg )
         {
             return arg.totalLength <= radius;
-        } , dontAddIfOccupied , stopSearchIfOccupied , addFirstTile );
+        } , moveType , dontAddIfOccupied , stopSearchIfOccupied , addFirstTile );
     }
 
     /// <summary>
@@ -187,7 +188,7 @@ public class Board : MonoBehaviour
     /// <param name="stopSearchIfOccupied">If true, the search is alted at Tiles with contents</param>
     /// <param name="addFirstTile">If true, the Start Tile is added</param>
     /// <returns></returns>
-    public List<Tile> SearchAreaLinks ( Tile start , Func<SearchTile , bool> addTile , bool dontAddIfOccupied = false , bool stopSearchIfOccupied = false , bool addFirstTile = true )
+    public List<Tile> SearchAreaLinks ( Tile start , Func<SearchTile , bool> addTile , moveTypes moveType , bool dontAddIfOccupied = false , bool stopSearchIfOccupied = false , bool addFirstTile = true )
     {
         List<SearchTile> tilesToReturn = new List<SearchTile> ();
         if ( addFirstTile )
@@ -201,9 +202,9 @@ public class Board : MonoBehaviour
         {
             SearchTile t = checkNow.Dequeue ();
 
-            searchLinks ( t , addTile , ref tilesToReturn , dontAddIfOccupied , stopSearchIfOccupied , ref checkNext );
+            searchLinks ( t , addTile , ref tilesToReturn , dontAddIfOccupied , stopSearchIfOccupied , ref checkNext , moveType );
             if ( starryBoard )
-                searchLinks ( t , addTile , ref tilesToReturn , dontAddIfOccupied , stopSearchIfOccupied , ref checkNext );
+                searchLinks ( t , addTile , ref tilesToReturn , dontAddIfOccupied , stopSearchIfOccupied , ref checkNext , moveType );
 
             if ( checkNow.Count == 0 )
                 SwapReference ( ref checkNow , ref checkNext );
@@ -272,7 +273,7 @@ public class Board : MonoBehaviour
     /// <param name="dontAddIfOccupied"></param>
     /// <param name="stopSearchIfOccupied"></param>
     /// <param name="checkNext"></param>
-    void searchLinks ( SearchTile start , Func<SearchTile , bool> addTile , ref List<SearchTile> tilesToReturn , bool dontAddIfOccupied , bool stopSearchIfOccupied , ref Queue<SearchTile> checkNext )
+    void searchLinks ( SearchTile start , Func<SearchTile , bool> addTile , ref List<SearchTile> tilesToReturn , bool dontAddIfOccupied , bool stopSearchIfOccupied , ref Queue<SearchTile> checkNext , moveTypes moveType )
     {
         foreach ( Link l in start.links )
         {
@@ -291,7 +292,8 @@ public class Board : MonoBehaviour
                 }
                 continue;
             }
-
+            if ( !next.tile.canMoveThrough ( moveType ) )
+                continue;
             if ( next.content != null )
                 if ( stopSearchIfOccupied )
                 {

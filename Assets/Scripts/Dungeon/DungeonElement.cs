@@ -7,6 +7,7 @@ public class DungeonElement : MonoBehaviour
     public bool bockLOS = false;
     public Collider2D collider2d;
     public Tile tile;
+    public List<Board.moveTypes> revokedMoveTypes = new List<Board.moveTypes> ();
 
     private void Awake ()
     {

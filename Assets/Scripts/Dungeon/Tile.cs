@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Board;
 
 public class Tile : MonoBehaviour
 {
@@ -10,14 +11,15 @@ public class Tile : MonoBehaviour
     public bool isEnabled;
     public int moveCost = 1;
     public bool walkable = true;
+    public TerrainType terrain;
 
     [Header ( "Objects" )]
     public SpriteRenderer tileSprite;
     public SpriteRenderer debugSprite;
     public List<Link> links = new List<Link> ();
     public DungeonElement content { get; private set; }
+    public List<DungeonElement> objects { get; private set; }
     public TMPro.TMP_Text debugText;
-
 
     public int attractiveness // Used by AI's to choose where to move
     {
@@ -47,6 +49,22 @@ public class Tile : MonoBehaviour
     {
         content = d;
         walkable = content == null;
+    }
+
+    public void setTerrain ( TerrainType tt )
+    {
+        terrain = tt;
+        tileSprite.color = terrain.color;
+    }
+
+    public bool canMoveThrough ( Board.moveTypes t )
+    {
+        List<Board.moveTypes> list = terrain.allowedMoveTypes;
+        foreach ( moveTypes mt in content.revokedMoveTypes )
+            try { list.Remove ( mt ); }
+            catch { }
+
+        return list.Contains ( t );
     }
 
     /// <summary>
@@ -85,9 +103,9 @@ public class Tile : MonoBehaviour
         return false;
     }
 
-    public bool removeLink(Link l)
+    public bool removeLink ( Link l )
     {
-        if (links.Contains ( l ) )
+        if ( links.Contains ( l ) )
         {
             links.Remove ( l );
             return true;

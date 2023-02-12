@@ -23,6 +23,8 @@ public class DungeonEditorEditor : Editor
             myScript.currentState = BoardEditor.states.addObject;
         if ( GUILayout.Button ( "Remove Object Mode" ) )
             myScript.currentState = BoardEditor.states.remObject;
+        if ( GUILayout.Button ( "Terrain Mode" ) )
+            myScript.currentState = BoardEditor.states.terrain;
 
         GUILayout.Space ( 20 );
         if ( GUILayout.Button ( "Make Link" ) )
