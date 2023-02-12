@@ -472,6 +472,59 @@ public class Board : MonoBehaviour
     }
 
     /// <summary>
+    /// Get Tiles drawing a cross.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="origin"></param>
+    /// <param name="ability"></param>
+    /// <returns></returns>
+    public List<Tile> getTilesInCross ( Tile start , Tile origin , int aoeSize , bool hasLineOfSight , bool aoeLineOfSight )
+    {
+        if ( start == null )
+            return new List<Tile> ();
+        List<Tile> ret = new List<Tile> ();
+        if ( aoeSize <= 1 )
+            return new List<Tile> () { start };
+        Tile tile;
+        Point dir;
+
+        dir = Point.direction ( origin.pos , start.pos ).normalized;
+        ret.Add ( start );
+
+        if ( dir.sqrtMagnitude == 1 )
+            foreach ( Point p in square )
+                ret.AddRange ( crossBranch ( start , origin , aoeSize , hasLineOfSight , aoeLineOfSight , p ) );
+        else
+            foreach ( Point p in star )
+                ret.AddRange ( crossBranch ( start , origin , aoeSize , hasLineOfSight , aoeLineOfSight , p ) );
+
+        for ( int i = ret.Count - 1 ; i >= 0 ; i-- ) // Removes null tiles or with no line of sight
+            if ( ret[ i ] == null || hasLineOfSight && false == Utilities.checkLineOfSight ( start , ret[ i ] ) )
+                ret.RemoveAt ( i );
+        return ret;
+    }
+
+    List<Tile> crossBranch ( Tile start , Tile origin , int aoeSize , bool hasLineOfSight , bool aoeLineOfSight , Point dir )
+    {
+        List<Tile> ret = new List<Tile> ();
+        Tile tile;
+
+        for ( int i = 1 ; i < aoeSize ; i++ )
+        {
+            tile = getTile ( start.pos + dir * i );
+            if ( tile == null )
+                if ( aoeLineOfSight ) // If no tile and need line of sight, stop search
+                    break;
+                else
+                    continue;
+            ret.Add ( tile );
+            if ( tile.content != null && aoeLineOfSight ) // If content and need line of sight, stop search
+                break;
+        }
+        return ret;
+    }
+
+    /// <summary>
     /// Perform an A* search on the Board by following tiles links.
     /// </summary>
     /// <param name="start">Starting Tile</param>
